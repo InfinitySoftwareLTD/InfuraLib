@@ -1,0 +1,40 @@
+{
+    "name": "infinitysolutions/infura",
+    "description": ":A simple API for Infura",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jerson",
+            "email": "jerson@innovativesprout.com"
+        }
+    ],
+    "keywords": ["Laravel", "Infura", "Infura API", "InfinitySolutions"],
+    "require": {
+        "illuminate/support": "~7|~8",
+        "mbezhanov/ethereum-converter": "^2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~9.0",
+        "orchestra/testbench": "~5|~6"
+    },
+    "autoload": {
+        "psr-4": {
+            "InfinitySolutions\\Infura\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "InfinitySolutions\\Infura\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "InfinitySolutions\\Infura\\InfuraServiceProvider"
+            ],
+            "aliases": {
+                "Infura": "InfinitySolutions\\Infura\\Facades\\Infura"
+            }
+        }
+    }
+}
