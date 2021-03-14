@@ -6,13 +6,15 @@ use Bezhanov\Ethereum\Converter;
 use InfinitySolutions\Infura\Contracts\NetworkInterface;
 use InfinitySolutions\Infura\Exceptions\NetworkErrorException;
 use InfinitySolutions\Infura\Networks\Mainnet;
+use InfinitySolutions\Infura\Traits\Method;
+use InfinitySolutions\Infura\Traits\Parameters;
 
-class Infura
-{
-    protected $address;
+class Infura{
+
+    use Method, Parameters;
+
     protected $network;
     protected $data;
-    protected $params;
 
     /**
      * Infura constructor.
@@ -28,26 +30,20 @@ class Infura
         return $this->network;
     }
 
-    /**
-     * @param $address
-     * @return $this
-     */
-    public function setAddress($address): Infura
+    public function buildRequestBody(): array
     {
-        $this->address = $address;
-        return $this;
-    }
-
-    public function setParams($params)
-    {
-        $this->params = $params;
-        return $this;
+        return [
+            'id' => $this->getId(),
+            'jsonrpc' => config('infura.jsonrpc'),
+            'method' => $this->getMethod(),
+            'params' => $this->getParams()
+        ];
     }
 
     public function sendRequest(): Infura
     {
         $client = new \GuzzleHttp\Client();
-        $req = $client->post($this->network()->uri() . '/'.config('infura.project_id'), ['json' => $this->params]);
+        $req = $client->post($this->network()->uri() . '/'.config('infura.project_id'), ['json' => $this->buildRequestBody()]);
         $this->data = json_decode($req->getBody()->getContents());
         return $this;
     }
@@ -68,6 +64,6 @@ class Infura
         }
 
         $converter = new Converter();
-        return $converter->fromWei((string) hexdec($this->getResponse()->result));
+        return $converter->fromWei((string) hexdec($this->getResponse()->result),'ether');
     }
 }
