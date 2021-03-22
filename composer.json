@@ -10,7 +10,6 @@
     ],
     "keywords": ["Laravel", "Infura", "Infura API", "InfinitySolutions"],
     "require": {
-        "illuminate/support": "~7|~8",
         "mbezhanov/ethereum-converter": "^2.0"
     },
     "require-dev": {
