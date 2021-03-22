@@ -2,6 +2,7 @@
 
 namespace InfinitySolutions\Infura;
 
+use App\Exceptions\ConnectionErrorException;
 use Bezhanov\Ethereum\Converter;
 use InfinitySolutions\Infura\Contracts\NetworkInterface;
 use InfinitySolutions\Infura\Exceptions\NetworkErrorException;
@@ -44,7 +45,11 @@ class Infura{
     {
         $client = new \GuzzleHttp\Client();
         $req = $client->post($this->network()->uri() . '/'.config('infura.project_id'), ['json' => $this->buildRequestBody()]);
-        $this->data = json_decode($req->getBody()->getContents());
+        if ($req->getStatusCode() == 200){
+            $this->data = json_decode($req->getBody()->getContents());
+        }else{
+            throw new ConnectionErrorException('There is an error connecting to all Edge node servers.');
+        }
         return $this;
     }
 
@@ -58,6 +63,16 @@ class Infura{
      * @throws NetworkErrorException
      */
     public function getBalance(): string
+    {
+        if (isset($this->getResponse()->error)){
+            throw new NetworkErrorException($this->getResponse()->error->message);
+        }
+
+        $converter = new Converter();
+        return $converter->fromWei((string) hexdec($this->getResponse()->result),'ether');
+    }
+
+    public function getGasPrice(): string
     {
         if (isset($this->getResponse()->error)){
             throw new NetworkErrorException($this->getResponse()->error->message);
